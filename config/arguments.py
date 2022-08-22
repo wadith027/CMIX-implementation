@@ -1,5 +1,5 @@
 import argparse
-import torch as th
+# import torch as th
 
 def get_arg():
     parser = argparse.ArgumentParser(description='QMIX-VN')
@@ -46,7 +46,7 @@ def get_arg():
 
     # running config
     parser.add_argument('--application', default='vn', 
-            help='Application scenario, select (blocker|vn), i.e. blocker game, vehicular network')
+            help='Application scenario, select (blocker|vn|CoopNav), i.e. blocker game, vehicular network')
     parser.add_argument('--log-dir', default='test',
         help='Directory to save model logs')
     parser.add_argument('--env-path', default=None,

@@ -23,7 +23,7 @@ class BlockerGameEnv():
     def setup(self):
         # generate agents position (maybe randomly)
         #init_pos = np.random.choice(self.grid_shape[1], self.n_agents, replace=False)
-        #self.agents_pos_init = [[0, init_pos[i]] for i in range(self.n_agents)]
+        #self.agents_pos_init = [[0, init_posdone[i]] for i in range(self.n_agents)]
         
         self.agents_pos_init = [[0, 1], [0, 3], [0, 6]] # static position, applied in CMIX ECML version
         
