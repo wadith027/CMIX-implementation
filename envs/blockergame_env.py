@@ -215,5 +215,8 @@ class BlockerGameEnv():
             obses.append(np.array(index + [self.global_step]))
 
         state = np.array(obs_total)
-        
+        # print("state ", state)
+        # print("obses ", obses)
+        # print("Local Reward ", local_rewards)
+        # print("Global Reward ", global_reward)
         return state, obses, local_rewards, global_reward, done_mask

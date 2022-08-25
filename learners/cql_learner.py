@@ -120,9 +120,13 @@ class CQLLearner:
             chosen_action_gap_loss = (done_mask * chosen_action_gap ** 2).mean()
         else:
             rewards = th.transpose(local_rewards, 1, 2)
+
             chosen_action_gap_loss = th.tensor(0.)
 
         # Calculate 1-step Q-Learning targets
+        # print("reward inside CQL_learner")
+        # print(rewards)
+        # print(self.args.gamma * target_max_qvals)
         targets = rewards + self.args.gamma * target_max_qvals
 
         # Td-error

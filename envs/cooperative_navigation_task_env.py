@@ -30,7 +30,7 @@ class CoopNavEnv(gym.Env):
         # self.observation_space = [self.height * self.width * 2]* self.n
         self.observation_space = [4] * self.n
         self.state_space = 4 * self.n
-        self.n_opponent_actions = 4
+        self.n_opponent_actions = 2
         self.reset()
 
     def get_rlinfo(self):
@@ -46,9 +46,12 @@ class CoopNavEnv(gym.Env):
         self.vel = np.zeros((self.n, 2))
         self.landmarks = np.concatenate((self.rng.uniform(0, self.height, self.n)[np.newaxis].T,
                                          self.rng.uniform(0, self.width, self.n)[np.newaxis].T), axis=1)
+        obs_2 = []
+
 
         obs = np.concatenate((self.pos, self.vel), axis=1)
-        state = np.array(self.pos)
+        state = obs.flatten()
+        # print(state)
         return state, obs
 
     def set_scheme(self, scheme):
@@ -75,6 +78,7 @@ class CoopNavEnv(gym.Env):
         self.pos[:, 0][self.pos[:, 0] > self.height] = self.height
         self.pos[:, 1][self.pos[:, 1] > self.width] = self.width
 
+        # obs = np.concatenate((self.pos, self.vel), axis=1).flatten()
         obs = np.concatenate((self.pos, self.vel), axis=1)
 
         # collisions
@@ -91,20 +95,31 @@ class CoopNavEnv(gym.Env):
         landmark_dist = np.linalg.norm(self.pos - self.landmarks, axis=1)  # distance to respective landmark
         rewards = -landmark_dist  # closer the landmark, the higher the reward
         penalty = collisions * self.collision_penalty  # penalty for collision
-        cum_reward = np.sum((rewards - penalty) * self.agent_priority)
+        # cum_reward = np.sum((rewards - penalty) * self.agent_priority)
 
+        # print("Cum_Reward ",cum_reward)
         # compute constraint reward
         constraint_rewards = min_dist
-        global_reward = cum_reward * self.n
-        local_rewards = cum_reward
-        obses = np.array(obs)
-        state = np.array(self.pos)
-        done_mask = False
+        # print(constraint_rewards)
+        rew = rewards-penalty
+        # r = np.array(r)
+        # print(r)
+        # cum_reward = np.concatenate(((rewards - penalty), constraint_rewards), axis=1)
+        # global_reward = np.sum(cum_reward)
+        global_reward = [np.sum(rew), np.sum(constraint_rewards)]
+        local_rewards = [global_reward] * self.n_agents
+        obses = obs
+        state = obs.flatten()
+        done_mask = True
         self.step_count = self.step_count + 1
-        if self.step_count >= 16:
-            done_mask = True
+        if self.step_count >= 64:
+            done_mask = False
             self.step_count = 0
         # return obs, (rewards, constraint_rewards), False, {}
+        # print("state ", state)
+        # print("obses ", obses)
+        # print("Local Reward ", local_rewards)
+        # print("Global Reward ", global_reward)
         return state, obses, local_rewards, global_reward, done_mask
 
 # env = CoopNavEnv(n=3, height=10, width=10, acceleration=0.5, agent_priority=[1, 1, 1], collision_threshold=0.5,

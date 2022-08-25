@@ -75,9 +75,13 @@ if __name__ == '__main__':
 
     for episode in range(args.training_episodes):
         buffer.clear()
-        # print("Buffer Clears")
+        print("Buffer Clears")
         for epoch in range(args.training_epochs):
             state, obses = env.reset()
+            # print("Obses Printing : ")
+            # print(obses)
+            # print("Obses state : ")
+            # print(state)
             # print("Environment Resets")
             for env_t in range(args.max_env_t):
                 print("episode:{} epoch:{} step: {}".format(episode, epoch, env_t))
@@ -93,6 +97,8 @@ if __name__ == '__main__':
                             else:
                                 action = np.random.randint(action_spaces[i])
                         else:
+                            # print("obses :", i)
+                            # print(obses[i])
                             qvals = agents[i](th.tensor(obses[i], dtype=th.float32).unsqueeze(0))
                             policys = agents[i].get_policy(th.tensor(obses[i], dtype=th.float32).unsqueeze(0))
                             dist = Categorical(probs=policys)
@@ -103,7 +109,8 @@ if __name__ == '__main__':
                         actions.append(action)
 
                 state, obses, local_rewards, global_reward, done_mask = env.step(actions)
-
+                # print("Step Kaj hoise")
+                # print(obses)
                 if done_mask == 0:
                     break
 
@@ -116,7 +123,7 @@ if __name__ == '__main__':
 
                 print(global_reward, file=global_reward_file)
                 buffer.add(transition_data)
-
+            print("Buffer Value ", len(buffer))
             if len(buffer) >= args.batch_size:
                 batch = buffer.sample_batch(args.batch_size)
                 if args.rl_model == "simple":
